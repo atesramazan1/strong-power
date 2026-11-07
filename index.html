@@ -1,0 +1,1319 @@
+```html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Mobil cihazlarda çift tıklama ve kutuya tıklayınca ekran büyümesini (auto-zoom) tamamen kilitleyen meta ayarı -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>STRONG POWER</title>
+  <style>
+    /* ==========================================================================
+       1. MOBİL EKRAN BÜYÜTME (ZOOM) ENGELLEME & KAYDIRMA AYARLARI
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: #090d16;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow-x: hidden;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 12px 12px 120px 12px; /* En alta kadar rahat kaydırma için geniş alt boşluk */
+    }
+
+    /* iOS ve Android'de sayı kutusuna tıklayınca ekranın büyümemesi için 16px üstü zorunludur */
+    input, button, select, textarea {
+      font-family: inherit;
+      font-size: 16px !important;
+      touch-action: manipulation;
+    }
+
+    /* Sayı kutularındaki varsayılan okları kaldır */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    /* ==========================================================================
+       2. ÜST BAR (STRONG POWER BAŞLIĞI & OTOMATİK KAYIT GÖSTERGESİ)
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(9, 13, 22, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1e293b;
+      padding: 10px 4px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #090d16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .save-pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .save-pill.flash {
+      background: #10b981;
+      color: #090d16;
+      transform: scale(1.04);
+    }
+
+    /* ==========================================================================
+       3. ANTRENMAN A / B SEKMELERİ (KAYDIRMA DESTEKLİ)
+       ========================================================================== */
+    .workout-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #111827;
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid #1f2937;
+      margin-bottom: 10px;
+    }
+
+    .workout-tab {
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      padding: 10px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+    }
+
+    .workout-tab .t-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+    }
+
+    .workout-tab .t-desc {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 2px;
+      opacity: 0.85;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .workout-tab.active {
+      background: #f59e0b;
+      color: #090d16;
+      box-shadow: 0 3px 12px rgba(245, 158, 11, 0.28);
+    }
+
+    .swipe-banner {
+      text-align: center;
+      font-size: 11.5px;
+      color: #94a3b8;
+      background: #111827;
+      border: 1px dashed #1f2937;
+      border-radius: 10px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       4. KISA AÇILIR MENÜ BUTONLARI (ISINMA, KİLO ARTIŞI, BESİN, GEÇMİŞ)
+       ========================================================================== */
+    .quick-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .q-btn {
+      background: #131c2e;
+      border: 1px solid #24324b;
+      color: #e2e8f0;
+      border-radius: 11px;
+      padding: 9px 4px;
+      font-size: 11.5px !important;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      line-height: 1.25;
+    }
+
+    .q-btn span {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 2px;
+    }
+
+    .q-btn.active {
+      background: #1e293b;
+      border-color: #f59e0b;
+      color: #fbbf24;
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Açılır Bilgi Panelleri */
+    .drawer {
+      display: none;
+      background: #131c2e;
+      border: 1px solid #293856;
+      border-radius: 14px;
+      padding: 13px;
+      margin-bottom: 12px;
+    }
+    .drawer.open {
+      display: block;
+    }
+
+    .drawer-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: #fbbf24;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .rule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .rule-box {
+      background: #0b101b;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: #cbd5e1;
+    }
+    .rule-box strong {
+      color: #ffffff;
+    }
+    .rule-highlight {
+      color: #34d399;
+      font-weight: 800;
+    }
+
+    /* Besin Değerleri Alanı */
+    .bw-control {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0b101b;
+      border: 1px solid #1e293b;
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .bw-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #e2e8f0;
+    }
+    .bw-stepper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mini-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #ffffff;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .bw-input {
+      width: 72px;
+      height: 38px;
+      border-radius: 9px;
+      border: 1px solid #10b981;
+      background: #090d16;
+      color: #34d399;
+      text-align: center;
+      font-weight: 900;
+    }
+    .macro-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .macro-item {
+      background: #0b101b;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 9px 10px;
+    }
+    .macro-item .m-lbl {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .macro-item .m-val {
+      font-size: 15px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-top: 2px;
+    }
+    .macro-item .m-sub {
+      font-size: 10.5px;
+      color: #38bdf8;
+      margin-top: 1px;
+    }
+
+    /* ==========================================================================
+       5. HAREKET KARTLARI (KAPALIYKEN SON KİLO GÖRÜNÜR, AÇILIR AKORDEON)
+       ========================================================================== */
+    .ex-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ex-card {
+      background: #131c2e;
+      border: 1px solid #22304a;
+      border-radius: 15px;
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+    .ex-card.open {
+      border-color: #f59e0b;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    }
+
+    .ex-header {
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .ex-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .gif-trigger {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      background: #0b101b;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px !important;
+      font-weight: 900;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .gif-trigger span {
+      font-size: 13px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .ex-meta {
+      min-width: 0;
+    }
+
+    .ex-title {
+      font-size: 14.5px;
+      font-weight: 900;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ex-fixed-sets {
+      font-size: 12px;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-top: 2px;
+    }
+
+    /* Kapalıyken bile görünen SON KİLON rozeti */
+    .last-weight-badge {
+      background: #0b101b;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      border-radius: 11px;
+      padding: 6px 10px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .last-weight-badge .lw-lbl {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 900;
+      color: #94a3b8;
+      letter-spacing: 0.4px;
+    }
+    .last-weight-badge .lw-val {
+      font-size: 15px;
+      font-weight: 900;
+      color: #34d399;
+    }
+
+    /* Açılır İçerik */
+    .ex-body {
+      display: none;
+      padding: 12px;
+      background: #0b101b;
+      border-top: 1px solid #1e293b;
+    }
+    .ex-card.open .ex-body {
+      display: block;
+    }
+
+    /* Otomatik Isınma Kutusu */
+    .warmup-strip {
+      background: rgba(245, 158, 11, 0.11);
+      border-left: 3px solid #f59e0b;
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #fde68a;
+      margin-bottom: 12px;
+    }
+    .warmup-strip strong {
+      color: #ffffff;
+    }
+
+    /* Ağırlık / Süre Ekleme Çıkarma Alanı */
+    .ctrl-group {
+      margin-bottom: 10px;
+    }
+    .ctrl-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .ctrl-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 72px;
+      gap: 8px;
+      align-items: center;
+    }
+    .step-btn {
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #ffffff;
+      font-size: 16px !important;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .step-btn:active {
+      transform: scale(0.97);
+    }
+    .step-btn.plus {
+      background: #059669;
+      border-color: #10b981;
+      color: #ffffff;
+    }
+    .step-btn.minus {
+      background: #26334d;
+      border-color: #3b4f74;
+    }
+
+    .val-input {
+      width: 100%;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid #475569;
+      background: #131c2e;
+      color: #ffffff;
+      text-align: center;
+      font-size: 20px !important;
+      font-weight: 900;
+      outline: none;
+    }
+    .val-input:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+    }
+
+    .ex-note {
+      font-size: 12px;
+      line-height: 1.45;
+      color: #cbd5e1;
+      padding-top: 8px;
+      border-top: 1px dashed #1e293b;
+    }
+
+    /* ==========================================================================
+       6. KATEGORİLİ GEÇMİŞ KAYITLAR
+       ========================================================================== */
+    .hist-category {
+      background: #0b101b;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+    .hist-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .hist-gain {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+    .hist-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .hist-chip {
+      background: #131c2e;
+      border: 1px solid #263552;
+      border-radius: 7px;
+      padding: 4px 8px;
+      font-size: 11.5px;
+      color: #cbd5e1;
+    }
+    .hist-chip strong {
+      color: #fbbf24;
+    }
+
+    /* ==========================================================================
+       7. CANLI GIF / ANİMASYON MODALI
+       ========================================================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.85);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      width: 100%;
+      max-width: 380px;
+      background: #131c2e;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 16px;
+      text-align: center;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #fbbf24;
+      margin-bottom: 10px;
+    }
+    .gif-stage {
+      height: 190px;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .modal-desc {
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: #e2e8f0;
+      margin-bottom: 14px;
+    }
+    .modal-close {
+      width: 100%;
+      height: 44px;
+      border: none;
+      border-radius: 11px;
+      background: #f59e0b;
+      color: #090d16;
+      font-weight: 900;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ÜST SABİT BAŞLIK -->
+  <header class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-title">STRONG POWER</div>
+        <div class="brand-sub">Tam Vücut 5x5 Ağırlık Takip</div>
+      </div>
+    </div>
+    <div id="saveBadge" class="save-pill">✓ Otomatik Kayıt</div>
+  </header>
+
+  <!-- ANTRENMAN A VE B SEKMELERİ -->
+  <div class="workout-tabs">
+    <button id="tabBtnA" class="workout-tab active" onclick="switchWorkout('A')">
+      <div class="t-head">
+        <span>ANTRENMAN A</span>
+        <span>🔥</span>
+      </div>
+      <div class="t-desc">Squat • Bench • Row • Dips • Plank</div>
+    </button>
+
+    <button id="tabBtnB" class="workout-tab" onclick="switchWorkout('B')">
+      <div class="t-head">
+        <span>ANTRENMAN B</span>
+        <span>⚡</span>
+      </div>
+      <div class="t-desc">Deadlift • Omuz • Barfiks • KB • Çiftçi</div>
+    </button>
+  </div>
+
+  <div class="swipe-banner">
+    ⇄ Ekranı sağa/sola kaydırarak <strong>A ve B</strong> arasında geçiş yapabilirsin
+  </div>
+
+  <!-- 4 KISA AÇILIR MENÜ BUTONU -->
+  <div class="quick-bar">
+    <button id="qBtn-warmup" class="q-btn" onclick="toggleDrawer('warmup')">
+      <span>🔥</span>Isınma
+    </button>
+    <button id="qBtn-prog" class="q-btn" onclick="toggleDrawer('prog')">
+      <span>📈</span>Kilo Artışı
+    </button>
+    <button id="qBtn-macro" class="q-btn" onclick="toggleDrawer('macro')">
+      <span>🥩</span>Besin Değerleri
+    </button>
+    <button id="qBtn-hist" class="q-btn" onclick="toggleDrawer('hist')">
+      <span>📊</span>Geçmiş Kayıtlar
+    </button>
+  </div>
+
+  <!-- 1. AÇILIR MENÜ: ISINMA -->
+  <section id="drawer-warmup" class="drawer">
+    <div class="drawer-title">
+      <span>🔥 Isınma (Her Harekette Baştan Isınma Yok!)</span>
+    </div>
+    <div class="rule-list">
+      <div class="rule-box">
+        <strong>Genel Hazırlık (3-4 Dk):</strong> Sadece salona ilk girdiğinde 3-4 dk bisiklet/yürüyüş yap ve omuzlarını/kalçanı çevirerek eklemleri aç.
+      </div>
+      <div class="rule-box">
+        <strong>1. Hareket (Squat veya Deadlift):</strong> Günün ilk hareketinde <strong>3 kademeli ısınma seti</strong> yapılır (Çalışma kilonun %40'ı × 5, %60'ı × 3, %80'i × 1 tekrar).
+      </div>
+      <div class="rule-box">
+        <strong>2. ve 3. Hareketler (Bench, Row, Omuz, Barfiks):</strong> Vücudun zaten sıcak! Baştan sona tekrar ısınma. Sadece çalışma kilonun <span class="rule-highlight">%60'ı ile 1 geçiş seti (5 tekrar)</span> yapıp direkt ana kilona gir.
+      </div>
+      <div class="rule-box">
+        <strong>4. ve 5. Hareketler:</strong> Hiç ısınma seti yapmadan doğrudan çalışma kilona gir.
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. AÇILIR MENÜ: KİLO ARTIŞI (NE SIKLIKLA VE NE KADAR?) -->
+  <section id="drawer-prog" class="drawer">
+    <div class="drawer-title">
+      <span>📈 Ne Sıklıkla ve Ne Kadar Kilo Artırılır?</span>
+    </div>
+    <div class="rule-list">
+      <div class="rule-box">
+        <strong>Ne Zaman Artırılır?</strong> Hareketin üzerinde yazan tüm set ve tekrarları (örneğin 5 Set × 5 Tekrarın tamamını) yardımsız çıkardığında, <span class="rule-highlight">bir sonraki aynı antrenmanda (haftada 1)</span> kiloyu artır. Son setlerde tekrar kaçırdıysan aynı kiloda kal.
+      </div>
+      <div class="rule-box">
+        <strong>Alt Vücut (Squat & Deadlift):</strong> Haftada 1 kez toplam <span class="rule-highlight">+2.5 kg ile +5 kg</span> artır.
+      </div>
+      <div class="rule-box">
+        <strong>Üst Vücut (Bench, Omuz, Row, Lat Pulldown):</strong> 1 veya 2 haftada bir toplam <span class="rule-highlight">+2.5 kg</span> (veya makinede 1 kademe) artır.
+      </div>
+      <div class="rule-box">
+        <strong>Süreli Hareketler (Plank & Çiftçi Yürüyüşü):</strong>
+        <br>• <strong>Plank:</strong> Önce süreyi <strong>60 saniyeye</strong> çıkar. 60 sn tamamlanınca süreyi sabit tut, sırtına <strong>+2.5 / +5 kg</strong> plaka ekle.
+        <br>• <strong>Çiftçi Yürüyüşü:</strong> Hedef <strong>45 saniye</strong> yürümek. 45 sn tamamlandığında süreyi uzatma, doğrudan dambıl kilosunu (Kg) artır.
+      </div>
+      <div class="rule-box">
+        <strong>Takılma (Plato) Kuralı:</strong> 3 antrenman üst üste aynı kiloda takılırsan, bir sonraki antrenmanda kiloyu <strong>%10 düşür</strong> ve sonraki hafta tekrar yukarı çık.
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. AÇILIR MENÜ: BESİN DEĞERLERİ -->
+  <section id="drawer-macro" class="drawer">
+    <div class="drawer-title">
+      <span>🥩 Besin Değerleri</span>
+    </div>
+    <div class="bw-control">
+      <span class="bw-label">Vücut Kilon (kg):</span>
+      <div class="bw-stepper">
+        <button type="button" class="mini-btn" onclick="stepBodyWeight(-1)">-1</button>
+        <input id="bwInput" type="number" inputmode="decimal" class="bw-input" value="80" onfocus="this.select()" oninput="onBodyWeightInput(this.value)" />
+        <button type="button" class="mini-btn" onclick="stepBodyWeight(1)">+1</button>
+      </div>
+    </div>
+    <div id="macroGrid" class="macro-grid"></div>
+  </section>
+
+  <!-- 4. AÇILIR MENÜ: HAREKET BAZLI GEÇMİŞ KAYITLAR -->
+  <section id="drawer-hist" class="drawer">
+    <div class="drawer-title">
+      <span>📊 Geçmiş Kayıtlar (Hareket Bazlı)</span>
+    </div>
+    <div id="historyList"></div>
+  </section>
+
+  <!-- HAREKET KARTLARI LİSTESİ -->
+  <main id="exerciseContainer" class="ex-list"></main>
+
+  <!-- HAREKET GIF MODALI -->
+  <div id="gifModal" class="modal-overlay" onclick="closeGifModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div id="gifTitle" class="modal-title">Hareket</div>
+      <div id="gifStage" class="gif-stage"></div>
+      <div id="gifDesc" class="modal-desc"></div>
+      <button type="button" class="modal-close" onclick="closeGifModal()">KAPAT</button>
+    </div>
+  </div>
+
+  <script>
+    // Çift tıklama ve parmakla yakınlaştırmayı (zoom) engelle
+    document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+
+    const STORAGE_KEY = 'strong_power_v1';
+
+    // Sabit hareket listesi ve başlangıç değerleri
+    const DEFAULT_STATE = {
+      activeWorkout: 'A',
+      bodyWeight: 80,
+      exercises: {
+        // ANTRENMAN A
+        squat: {
+          workout: 'A', order: 1, name: '1. Squat', sets: '5 Set × 5 Tekrar',
+          type: 'weight', kg: 60, step: 2.5, anim: 'squat',
+          note: 'Nefesi karnına alıp kilitle, topuklardan yeri iterek patlayıcı kalk. 5x5 tam çıkınca haftaya +2.5 / +5 kg artır.'
+        },
+        bench: {
+          workout: 'A', order: 2, name: '2. Bench Press', sets: '5 Set × 5 Tekrar',
+          type: 'weight', kg: 50, step: 2.5, anim: 'bench',
+          note: 'Kürek kemiklerini sehpaya kilitle, ayaklarınla yeri it. 5x5 tamamlanınca bir sonraki idmanda +2.5 kg artır.'
+        },
+        row: {
+          workout: 'A', order: 3, name: '3. T-Bar / Cable Row', sets: '4 Set × 8 Tekrar',
+          type: 'weight', kg: 45, step: 2.5, anim: 'row',
+          note: 'Belini sallamadan dirseklerini geriye çek, karnına değince sırtı 1 sn sık. 4x8 çıkınca +2.5 kg artır.'
+        },
+        dips: {
+          workout: 'A', order: 4, name: '4. Dips (Göğüs & Arka Kol)', sets: '3 Set × 8 Tekrar',
+          type: 'weight', kg: 0, step: 2.5, anim: 'dips',
+          note: 'Önce kendi vücut ağırlığınla (0 kg) 3x8 yap. Rahat çıkınca kemer veya dambılla +2.5 kg ekle.'
+        },
+        plank: {
+          workout: 'A', order: 5, name: '5. Plank (Karın Zırhı)', sets: '3 Set × Süre',
+          type: 'timed', sec: 45, kg: 0, step: 2.5, anim: 'plank',
+          note: 'Önce süreyi 60 saniyeye çıkar. 60 sn rahat çıkınca süreyi sabit tut ve sırtına +2.5 / +5 kg plaka ekle.'
+        },
+
+        // ANTRENMAN B
+        deadlift: {
+          workout: 'B', order: 1, name: '1. Deadlift', sets: '3 Set × 5 Tekrar',
+          type: 'weight', kg: 80, step: 2.5, anim: 'deadlift',
+          note: 'Barı bacaklarına yapıştır, belini bükmeden yeri bacaklarınla it. 3x5 tam çıkınca haftaya +2.5 / +5 kg artır.'
+        },
+        ohp: {
+          workout: 'B', order: 2, name: '2. Overhead Press (Omuz)', sets: '5 Set × 5 Tekrar',
+          type: 'weight', kg: 35, step: 2.5, anim: 'ohp',
+          note: 'Kalçanı ve karnını sık, barı başının tam üzerinde kilitle. 5x5 tamamlandıkça 1-2 haftada bir +2.5 kg artır.'
+        },
+        pulldown: {
+          workout: 'B', order: 3, name: '3. Barfiks / Lat Pulldown', sets: '4 Set × 8 Tekrar',
+          type: 'weight', kg: 55, step: 2.5, anim: 'pulldown',
+          note: 'Omuzları aşağı bastır, barı üst göğsüne çek. 4x8 nizami tamamlanınca +2.5 kg artır.'
+        },
+        kbclean: {
+          workout: 'B', order: 4, name: '4. Kettlebell Clean / Patlayıcı Şınav', sets: '3 Set × 8 Tekrar',
+          type: 'weight', kg: 16, step: 2, anim: 'kbclean',
+          note: 'Ağırlığı kolla değil kalça patlayıcılığıyla omuza al ve yukarı bas.'
+        },
+        farmer: {
+          workout: 'B', order: 5, name: "5. Farmer's Walk (Çiftçi Yürüyüşü)", sets: '3 Set × 45 Sn',
+          type: 'timed', sec: 45, kg: 24, step: 2.5, anim: 'farmer',
+          note: 'Hedef 45 sn dik yürümek. 45 saniyeyi elin açılmadan tamamladığında süreyi uzatma, dambıl kilosunu (Kg) artır.'
+        }
+      },
+      history: {}
+    };
+
+    let state = loadAppState();
+    let openAccordionMap = { squat: true, deadlift: true };
+    let historyTimers = {};
+
+    function loadAppState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return ensureInitialHistory(JSON.parse(JSON.stringify(DEFAULT_STATE)));
+        const parsed = JSON.parse(raw);
+        for (const key in DEFAULT_STATE.exercises) {
+          if (!parsed.exercises[key]) {
+            parsed.exercises[key] = DEFAULT_STATE.exercises[key];
+          }
+        }
+        if (!parsed.history) parsed.history = {};
+        return ensureInitialHistory(parsed);
+      } catch (err) {
+        return ensureInitialHistory(JSON.parse(JSON.stringify(DEFAULT_STATE)));
+      }
+    }
+
+    function ensureInitialHistory(data) {
+      const today = getTodayStr();
+      for (const id in data.exercises) {
+        if (!data.history[id] || data.history[id].length === 0) {
+          const ex = data.exercises[id];
+          data.history[id] = [{
+            date: today,
+            kg: ex.kg,
+            sec: ex.sec || null
+          }];
+        }
+      }
+      return data;
+    }
+
+    function getTodayStr() {
+      return new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
+    }
+
+    function saveAppState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+      const badge = document.getElementById('saveBadge');
+      if (badge) {
+        badge.textContent = '✓ Kaydedildi';
+        badge.classList.add('flash');
+        setTimeout(() => {
+          badge.textContent = '✓ Otomatik Kayıt';
+          badge.classList.remove('flash');
+        }, 700);
+      }
+    }
+
+    // Her hareketin sırasına göre (1. hareket tam ısınma, 2-3. hareket tek geçiş seti, 4-5. hareket ısınma yok) otomatik hesaplama
+    function buildWarmupText(ex) {
+      const w = Number(ex.kg) || 0;
+      const round25 = (n) => Math.max(10, Math.round(n / 2.5) * 2.5);
+
+      if (ex.order === 1) {
+        const w40 = Math.max(20, round25(w * 0.4));
+        const w60 = Math.max(20, round25(w * 0.6));
+        const w80 = Math.max(20, round25(w * 0.8));
+        return `🔥 <strong>1. Hareket Tam Isınma:</strong><br>1.Set: <strong>${w40} kg × 5</strong> &rarr; 2.Set: <strong>${w60} kg × 3</strong> &rarr; 3.Set: <strong>${w80} kg × 1</strong> yap, sonra <strong>${w} kg</strong> ana sete gir.`;
+      }
+
+      if (ex.order === 2 || ex.order === 3) {
+        const trans = round25(w * 0.6);
+        return `⚡ <strong>Tek Set Geçiş Isınması (Baştan Isınma Yok!):</strong><br>Vücudun zaten sıcak. Sadece <strong>${trans} kg × 5 tekrar (1 set)</strong> yapıp doğrudan <strong>${w} kg</strong> ana setine gir.`;
+      }
+
+      return `✅ <strong>Isınma Yok:</strong> Kasların ve eklemlerin tamamen sıcak. Hiç ısınma yapmadan doğrudan çalışma setine gir.`;
+    }
+
+    function formatBadgeValue(ex) {
+      if (ex.type === 'timed') {
+        return `${ex.sec} sn • ${ex.kg} kg`;
+      }
+      return `${ex.kg} kg`;
+    }
+
+    function renderExercises() {
+      const container = document.getElementById('exerciseContainer');
+      const items = Object.entries(state.exercises)
+        .filter(([_, ex]) => ex.workout === state.activeWorkout)
+        .sort((a, b) => a[1].order - b[1].order);
+
+      container.innerHTML = items.map(([id, ex]) => {
+        const isOpen = !!openAccordionMap[id];
+        return `
+          <article id="card-${id}" class="ex-card ${isOpen ? 'open' : ''}">
+            <!-- KAPALIYKEN BİLE SON KİLOYU GÖSTEREN BAŞLIK -->
+            <div class="ex-header" onclick="toggleExerciseCard('${id}')">
+              <div class="ex-header-left">
+                <button type="button" class="gif-trigger" onclick="openGifModal(event, '${id}')">
+                  <span>🎥</span>GIF
+                </button>
+                <div class="ex-meta">
+                  <div class="ex-title">${ex.name}</div>
+                  <div class="ex-fixed-sets">${ex.sets}</div>
+                </div>
+              </div>
+
+              <div class="last-weight-badge">
+                <span class="lw-lbl">SON KİLON</span>
+                <span id="badge-${id}" class="lw-val">${formatBadgeValue(ex)}</span>
+              </div>
+            </div>
+
+            <!-- AÇILIR HAREKET İÇERİĞİ -->
+            <div class="ex-body">
+              <div id="warmup-${id}" class="warmup-strip">
+                ${buildWarmupText(ex)}
+              </div>
+
+              ${ex.type === 'timed' ? `
+                <div class="ctrl-group">
+                  <div class="ctrl-header">
+                    <span>SÜRE (SANİYE)</span>
+                    <span>Otomatik Kaydedilir</span>
+                  </div>
+                  <div class="ctrl-row">
+                    <button type="button" class="step-btn minus" onclick="stepExerciseValue('${id}', 'sec', -5)">-5 sn</button>
+                    <input id="input-sec-${id}" type="number" inputmode="numeric" pattern="[0-9]*" class="val-input" value="${ex.sec}" onfocus="this.select()" oninput="directExerciseInput('${id}', 'sec', this.value)" />
+                    <button type="button" class="step-btn plus" onclick="stepExerciseValue('${id}', 'sec', 5)">+5 sn</button>
+                  </div>
+                </div>
+              ` : ''}
+
+              <div class="ctrl-group">
+                <div class="ctrl-header">
+                  <span>${ex.type === 'timed' ? 'EK AĞIRLIK / DAMBIL (KG)' : 'ÇALIŞMA KİLOSU (KG)'}</span>
+                  <span>Otomatik Kaydedilir</span>
+                </div>
+                <div class="ctrl-row">
+                  <button type="button" class="step-btn minus" onclick="stepExerciseValue('${id}', 'kg', -${ex.step})">-${ex.step}</button>
+                  <input id="input-kg-${id}" type="number" inputmode="decimal" step="0.5" class="val-input" value="${ex.kg}" onfocus="this.select()" oninput="directExerciseInput('${id}', 'kg', this.value)" />
+                  <button type="button" class="step-btn plus" onclick="stepExerciseValue('${id}', 'kg', ${ex.step})">+${ex.step}</button>
+                </div>
+              </div>
+
+              <div class="ex-note">💡 ${ex.note}</div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleExerciseCard(id) {
+      openAccordionMap[id] = !openAccordionMap[id];
+      const card = document.getElementById(`card-${id}`);
+      if (card) card.classList.toggle('open', openAccordionMap[id]);
+    }
+
+    function stepExerciseValue(id, field, delta) {
+      const ex = state.exercises[id];
+      const current = Number(ex[field]) || 0;
+      const next = Math.max(0, Math.round((current + delta) * 10) / 10);
+      ex[field] = next;
+
+      const inputEl = document.getElementById(`input-${field}-${id}`);
+      if (inputEl) inputEl.value = next;
+
+      syncExerciseUI(id);
+    }
+
+    function directExerciseInput(id, field, rawValue) {
+      if (rawValue === '') return;
+      const val = Math.max(0, Number(rawValue));
+      if (isNaN(val)) return;
+      state.exercises[id][field] = val;
+      syncExerciseUI(id);
+    }
+
+    function syncExerciseUI(id) {
+      const ex = state.exercises[id];
+      const badgeEl = document.getElementById(`badge-${id}`);
+      if (badgeEl) badgeEl.textContent = formatBadgeValue(ex);
+
+      const warmupEl = document.getElementById(`warmup-${id}`);
+      if (warmupEl) warmupEl.innerHTML = buildWarmupText(ex);
+
+      saveAppState();
+
+      clearTimeout(historyTimers[id]);
+      historyTimers[id] = setTimeout(() => {
+        pushHistoryEntry(id);
+      }, 500);
+    }
+
+    function pushHistoryEntry(id) {
+      const ex = state.exercises[id];
+      const today = getTodayStr();
+      if (!state.history[id]) state.history[id] = [];
+      const list = state.history[id];
+      const last = list[list.length - 1];
+
+      if (last && last.date === today) {
+        last.kg = ex.kg;
+        last.sec = ex.sec || null;
+      } else if (!last || last.kg !== ex.kg || last.sec !== (ex.sec || null)) {
+        list.push({
+          date: today,
+          kg: ex.kg,
+          sec: ex.sec || null
+        });
+        if (list.length > 10) list.shift();
+      }
+      saveAppState();
+      renderHistoryDrawer();
+    }
+
+    function renderHistoryDrawer() {
+      const container = document.getElementById('historyList');
+      if (!container) return;
+
+      container.innerHTML = Object.entries(state.exercises).map(([id, ex]) => {
+        const logs = state.history[id] || [];
+        const startKg = logs[0] ? Number(logs[0].kg) : Number(ex.kg);
+        const diffKg = Math.round((Number(ex.kg) - startKg) * 10) / 10;
+        const diffLabel = diffKg > 0 ? `+${diffKg} kg gelişim` : 'Aktif Kayıt';
+
+        const chips = logs.map(item => {
+          const label = ex.type === 'timed'
+            ? `${item.sec}sn / ${item.kg}kg`
+            : `${item.kg} kg`;
+          return `<span class="hist-chip"><strong>${label}</strong> (${item.date})</span>`;
+        }).join('');
+
+        return `
+          <div class="hist-category">
+            <div class="hist-top">
+              <span>[${ex.workout}] ${ex.name}</span>
+              <span class="hist-gain">${diffLabel}</span>
+            </div>
+            <div class="hist-badges">${chips}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Besin Değerleri Hesaplama
+    function renderMacroDrawer() {
+      const bw = Number(state.bodyWeight) || 80;
+      const bwInput = document.getElementById('bwInput');
+      if (bwInput && document.activeElement !== bwInput) {
+        bwInput.value = bw;
+      }
+
+      const protein = Math.round(bw * 2.0);
+      const carbs = Math.round(bw * 3.6);
+      const fat = Math.round(bw * 0.9);
+      const kcal = (protein * 4) + (carbs * 4) + (fat * 9);
+      const water = (bw * 0.04).toFixed(1);
+
+      document.getElementById('macroGrid').innerHTML = `
+        <div class="macro-item">
+          <div class="m-lbl">GÜNLÜK PROTEİN</div>
+          <div class="m-val">${protein} g</div>
+          <div class="m-sub">Kas ve güç inşası (2g/kg)</div>
+        </div>
+        <div class="macro-item">
+          <div class="m-lbl">KARBONHİDRAT</div>
+          <div class="m-val">${carbs} g</div>
+          <div class="m-sub">Ağır antrenman enerjisi</div>
+        </div>
+        <div class="macro-item">
+          <div class="m-lbl">SAĞLIKLI YAĞ & KALORİ</div>
+          <div class="m-val">${fat} g • ${kcal} kcal</div>
+          <div class="m-sub">Hormon ve toparlanma</div>
+        </div>
+        <div class="macro-item">
+          <div class="m-lbl">SU & KREATİN</div>
+          <div class="m-val">${water} L Su + 5g</div>
+          <div class="m-sub">Her gün 5g Kreatin Monohidrat</div>
+        </div>
+      `;
+    }
+
+    function stepBodyWeight(delta) {
+      state.bodyWeight = Math.max(40, Math.min(200, (Number(state.bodyWeight) || 80) + delta));
+      saveAppState();
+      renderMacroDrawer();
+    }
+
+    function onBodyWeightInput(val) {
+      const num = Number(val);
+      if (!num || num < 35) return;
+      state.bodyWeight = num;
+      saveAppState();
+      renderMacroDrawer();
+    }
+
+    // Üst Bilgi Panellerini Aç/Kapat
+    function toggleDrawer(key) {
+      const keys = ['warmup', 'prog', 'macro', 'hist'];
+      keys.forEach(k => {
+        const drawer = document.getElementById(`drawer-${k}`);
+        const btn = document.getElementById(`qBtn-${k}`);
+        if (k === key) {
+          const isOpen = drawer.classList.toggle('open');
+          btn.classList.toggle('active', isOpen);
+        } else {
+          drawer.classList.remove('open');
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    // A ve B Antrenman Geçişi
+    function switchWorkout(tab) {
+      state.activeWorkout = tab;
+      document.getElementById('tabBtnA').classList.toggle('active', tab === 'A');
+      document.getElementById('tabBtnB').classList.toggle('active', tab === 'B');
+      saveAppState();
+      renderExercises();
+    }
+
+    // Ekranı Sağa ve Sola Kaydırarak (Swipe) A/B Antrenman Değiştirme
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      const dy = e.changedTouches[0].screenY - touchStartY;
+      if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.7) {
+        if (dx < 0 && state.activeWorkout === 'A') {
+          switchWorkout('B');
+        } else if (dx > 0 && state.activeWorkout === 'B') {
+          switchWorkout('A');
+        }
+      }
+    }, { passive: true });
+
+    // 10 Hareket İçin Özel Canlı Animasyonlu GIF (SVG) Çizimi
+    function buildGifSvg(anim) {
+      const svgs = {
+        squat: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <line x1="18" y1="106" x2="102" y2="106" stroke="#334155" stroke-width="4"/>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,0; 0,24; 0,0" dur="1.7s" repeatCount="indefinite"/>
+            <circle cx="60" cy="26" r="8" fill="#fbbf24"/>
+            <line x1="22" y1="40" x2="98" y2="40" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+            <rect x="18" y="31" width="8" height="18" fill="#ef4444" rx="2"/>
+            <rect x="94" y="31" width="8" height="18" fill="#ef4444" rx="2"/>
+            <line x1="60" y1="35" x2="60" y2="68" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+          </g>
+          <line x1="60" y1="68" x2="45" y2="104" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+          <line x1="60" y1="68" x2="75" y2="104" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+        </svg>`,
+        bench: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <rect x="22" y="72" width="76" height="8" fill="#475569" rx="3"/>
+          <line x1="34" y1="80" x2="34" y2="106" stroke="#475569" stroke-width="4"/>
+          <line x1="86" y1="80" x2="86" y2="106" stroke="#475569" stroke-width="4"/>
+          <circle cx="34" cy="63" r="7" fill="#fbbf24"/>
+          <line x1="43" y1="65" x2="84" y2="65" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,0; 0,21; 0,0" dur="1.5s" repeatCount="indefinite"/>
+            <line x1="20" y1="36" x2="100" y2="36" stroke="#38bdf8" stroke-width="5"/>
+            <rect x="16" y="27" width="8" height="18" fill="#ef4444" rx="2"/>
+            <rect x="96" y="27" width="8" height="18" fill="#ef4444" rx="2"/>
+          </g>
+        </svg>`,
+        row: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <line x1="18" y1="106" x2="102" y2="106" stroke="#334155" stroke-width="4"/>
+          <circle cx="76" cy="36" r="8" fill="#fbbf24"/>
+          <line x1="45" y1="62" x2="70" y2="42" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+          <line x1="45" y1="62" x2="38" y2="104" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,16; -10,0; 0,16" dur="1.5s" repeatCount="indefinite"/>
+            <line x1="65" y1="48" x2="78" y2="75" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="78" cy="78" r="10" fill="#ef4444"/>
+          </g>
+        </svg>`,
+        dips: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <line x1="30" y1="58" x2="90" y2="58" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+          <line x1="35" y1="58" x2="35" y2="106" stroke="#475569" stroke-width="4"/>
+          <line x1="85" y1="58" x2="85" y2="106" stroke="#475569" stroke-width="4"/>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,0; 0,18; 0,0" dur="1.5s" repeatCount="indefinite"/>
+            <circle cx="60" cy="28" r="8" fill="#fbbf24"/>
+            <line x1="60" y1="36" x2="60" y2="72" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+            <line x1="60" y1="72" x2="54" y2="95" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+          </g>
+        </svg>`,
+        plank: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <line x1="12" y1="96" x2="108" y2="96" stroke="#334155" stroke-width="4"/>
+          <circle cx="92" cy="68" r="7" fill="#fbbf24"/>
+          <line x1="24" y1="88" x2="84" y2="70" stroke="#f59e0b" stroke-width="7" stroke-linecap="round"/>
+          <line x1="82" y1="72" x2="82" y2="94" stroke="#f8fafc" stroke-width="4" stroke-linecap="round"/>
+          <rect x="46" y="62" width="22" height="7" fill="#10b981" rx="2"/>
+        </svg>`,
+        deadlift: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <line x1="15" y1="105" x2="105" y2="105" stroke="#334155" stroke-width="4"/>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,20; 0,0; 0,20" dur="1.8s" repeatCount="indefinite"/>
+            <circle cx="60" cy="28" r="8" fill="#fbbf24"/>
+            <line x1="60" y1="36" x2="60" y2="70" stroke="#f8fafc" stroke-width="6"/>
+            <line x1="20" y1="75" x2="100" y2="75" stroke="#38bdf8" stroke-width="5"/>
+            <circle cx="24" cy="75" r="11" fill="#ef4444"/>
+            <circle cx="96" cy="75" r="11" fill="#ef4444"/>
+          </g>
+          <line x1="52" y1="70" x2="48" y2="103" stroke="#cbd5e1" stroke-width="5"/>
+          <line x1="68" y1="70" x2="72" y2="103" stroke="#cbd5e1" stroke-width="5"/>
+        </svg>`,
+        ohp: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <circle cx="60" cy="50" r="8" fill="#fbbf24"/>
+          <line x1="60" y1="58" x2="60" y2="86" stroke="#f8fafc" stroke-width="6"/>
+          <line x1="60" y1="86" x2="48" y2="108" stroke="#cbd5e1" stroke-width="5"/>
+          <line x1="60" y1="86" x2="72" y2="108" stroke="#cbd5e1" stroke-width="5"/>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,26; 0,0; 0,26" dur="1.5s" repeatCount="indefinite"/>
+            <line x1="20" y1="24" x2="100" y2="24" stroke="#38bdf8" stroke-width="5"/>
+            <rect x="16" y="16" width="8" height="16" fill="#ef4444" rx="2"/>
+            <rect x="96" y="16" width="8" height="16" fill="#ef4444" rx="2"/>
+          </g>
+        </svg>`,
+        pulldown: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <line x1="25" y1="20" x2="95" y2="20" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,20; 0,0; 0,20" dur="1.6s" repeatCount="indefinite"/>
+            <circle cx="60" cy="40" r="8" fill="#fbbf24"/>
+            <line x1="60" y1="48" x2="60" y2="85" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+            <line x1="38" y1="20" x2="54" y2="52" stroke="#38bdf8" stroke-width="4"/>
+            <line x1="82" y1="20" x2="66" y2="52" stroke="#38bdf8" stroke-width="4"/>
+          </g>
+        </svg>`,
+        kbclean: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <circle cx="60" cy="34" r="8" fill="#fbbf24"/>
+          <line x1="60" y1="42" x2="60" y2="76" stroke="#f8fafc" stroke-width="6"/>
+          <line x1="60" y1="76" x2="46" y2="106" stroke="#cbd5e1" stroke-width="5"/>
+          <line x1="60" y1="76" x2="74" y2="106" stroke="#cbd5e1" stroke-width="5"/>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,32; 0,-12; 0,32" dur="1.4s" repeatCount="indefinite"/>
+            <circle cx="76" cy="52" r="10" fill="#10b981"/>
+          </g>
+        </svg>`,
+        farmer: `<svg width="170" height="170" viewBox="0 0 120 120">
+          <line x1="15" y1="106" x2="105" y2="106" stroke="#334155" stroke-width="4"/>
+          <circle cx="60" cy="28" r="8" fill="#fbbf24"/>
+          <line x1="60" y1="36" x2="60" y2="72" stroke="#f8fafc" stroke-width="6"/>
+          <rect x="34" y="64" width="12" height="18" fill="#ef4444" rx="3"/>
+          <rect x="74" y="64" width="12" height="18" fill="#ef4444" rx="3"/>
+          <line x1="60" y1="72" x2="48" y2="104" stroke="#38bdf8" stroke-width="5"/>
+          <line x1="60" y1="72" x2="72" y2="104" stroke="#38bdf8" stroke-width="5"/>
+        </svg>`
+      };
+      return svgs[anim] || svgs.squat;
+    }
+
+    function openGifModal(e, id) {
+      e.stopPropagation();
+      const ex = state.exercises[id];
+      document.getElementById('gifTitle').textContent = ex.name;
+      document.getElementById('gifStage').innerHTML = buildGifSvg(ex.anim);
+      document.getElementById('gifDesc').textContent = ex.note;
+      document.getElementById('gifModal').classList.add('open');
+    }
+
+    function closeGifModal() {
+      document.getElementById('gifModal').classList.remove('open');
+    }
+
+    // Başlangıç Yüklemesi
+    renderExercises();
+    renderMacroDrawer();
+    renderHistoryDrawer();
+  </script>
+</body>
+</html>
+```
